@@ -44,7 +44,7 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
-              "name": "KeyName",
+              "name": "ServiceBusConnectionString",
               "value": "[parameters('serviceBusConnectionString')]"
             }
           ]

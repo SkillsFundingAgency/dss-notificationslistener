@@ -46,7 +46,7 @@
                 "configEnvironmentName": {
                   "value": "[parameters('environmentName')]"
                 },
-                "serviceBusAccessKey": {
+                "serviceBusConnectionString": {
                   "value": "[parameters('serviceBusConnectionString')]"
                 }
               }
