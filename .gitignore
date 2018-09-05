@@ -3,3 +3,5 @@
 ################################################################################
 
 /.vs
+/NCS.DSS.NotificationsListener/bin
+/NCS.DSS.NotificationsListener/obj
