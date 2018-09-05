@@ -11,18 +11,18 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
 {
     public static class Listener
     {
-        [FunctionName("Listener")]
-        public static void Run([ServiceBusTrigger("eastandbucks", "eastandbucks", AccessRights.Listen, Connection = "ServiceBusConnectionString")]BrokeredMessage serviceBusMessage, ILogger log)
-        {
-            var body = new StreamReader(serviceBusMessage.GetBody<Stream>(), Encoding.UTF8).ReadToEnd();
+        //[FunctionName("Listener")]
+        //public static void Run([ServiceBusTrigger("eastandbucks", "eastandbucks", AccessRights.Listen, Connection = "ServiceBusConnectionString")]BrokeredMessage serviceBusMessage, ILogger log)
+        //{
+        //    var body = new StreamReader(serviceBusMessage.GetBody<Stream>(), Encoding.UTF8).ReadToEnd();
 
-            var customer = JsonConvert.DeserializeObject<MessageModel>(body);
+        //    var customer = JsonConvert.DeserializeObject<MessageModel>(body);
 
-            if (customer == null)
-                return;
+        //    if (customer == null)
+        //        return;
 
-            var serialised = JsonConvert.SerializeObject(customer);
-            log.LogInformation(serialised);
-        }
+        //    var serialised = JsonConvert.SerializeObject(customer);
+        //    log.LogInformation(serialised);
+        //}
     }
 }
