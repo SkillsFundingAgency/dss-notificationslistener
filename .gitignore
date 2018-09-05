@@ -3,4 +3,5 @@
 ################################################################################
 
 /.vs
-/NCS.DSS.NotificationsListener/obj/Debug/net461/NCS.DSS.NotificationsListener.csprojAssemblyReference.cache
+/NCS.DSS.NotificationsListener/bin
+/NCS.DSS.NotificationsListener/obj

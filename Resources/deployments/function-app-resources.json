@@ -8,31 +8,10 @@
     "configEnvironmentName": {
       "type": "string"
     },
-    "cosmosDbCollectionId": {
-      "type": "string"
-    },
-    "cosmosDbDatabaseId": {
-      "type": "string"
-    },
-    "cosmosDbEndpoint": {
-      "type": "string"
-    },
-    "cosmosDbKey": {
-      "type": "string"
-    },
     "functionAppName": {
       "type": "string"
     },
-    "serviceBusAccessKey": {
-      "type": "string"
-    },
-    "serviceBusAccessKeyName": {
-      "type": "string"
-    },
-    "serviceBusBaseAddress": {
-      "type": "string"
-    },
-    "serviceBusQueueName": {
+    "serviceBusConnectionString": {
       "type": "string"
     }
   },
@@ -65,52 +44,8 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
-              "name": "CollectionId",
-              "value": "[parameters('cosmosDbCollectionId')]"
-            },
-            {
-              "name": "DatabaseId",
-              "value": "[parameters('cosmosDbDatabaseId')]"
-            },
-            {
-              "name": "Endpoint",
-              "value": "[parameters('cosmosDbEndpoint')]"
-            },
-            {
-              "name": "Key",
-              "value": "[parameters('cosmosDbKey')]"
-            },
-            {
-              "name": "CustomerCollectionId",
-              "value": "customers"
-            },
-            {
-              "name": "CustomerDatabaseId",
-              "value": "customers"
-            },
-            {
-              "name": "InteractionCollectionId",
-              "value": "interactions"
-            },
-            {
-              "name": "InteractionDatabaseId",
-              "value": "interactions"
-            },
-            {
-              "name": "KeyName",
-              "value": "[parameters('serviceBusAccessKeyName')]"
-            },
-            {
-              "name": "AccessKey",
-              "value": "[parameters('serviceBusAccessKey')]"
-            },
-            {
-              "name": "BaseAddress",
-              "value": "[parameters('serviceBusBaseAddress')]"
-            },
-            {
-              "name": "QueueName",
-              "value": "[parameters('serviceBusQueueName')]"
+              "name": "ServiceBusConnectionString",
+              "value": "[parameters('serviceBusConnectionString')]"
             }
           ]
         }
