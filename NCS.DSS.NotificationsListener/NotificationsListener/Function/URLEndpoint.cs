@@ -32,6 +32,7 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
         {
 
             string noti;
+            string bearer = string.Empty;
 
             Models.Notification notification;
 
@@ -50,9 +51,16 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
             }
             else
             {
-                 noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
-                        "URL : " + notification.ResourceURL + Environment.NewLine +
-                        "LastModifiedDate : " + notification.LastModifiedDate.ToString();
+
+                if (req.Headers.GetValues("Bearer") != null)
+                {
+                    bearer = req.Headers.GetValues("Bearer").ToString();
+                }
+
+                noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
+                       "URL : " + notification.ResourceURL + Environment.NewLine +
+                       "LastModifiedDate : " + notification.LastModifiedDate.ToString() +
+                       "Bearer : " + bearer;
                 
                 log.LogInformation(noti);
             }
