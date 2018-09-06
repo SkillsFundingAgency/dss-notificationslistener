@@ -31,6 +31,8 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper)
         {
 
+            string noti;
+
             Models.Notification notification;
 
             try
@@ -48,11 +50,15 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
             }
             else
             {
-                log.LogInformation(JsonHelper.SerializeObject(notification));
+                 noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
+                        "URL : " + notification.ResourceURL + Environment.NewLine +
+                        "LastModifiedDate : " + notification.LastModifiedDate.ToString();
+                
+                log.LogInformation(noti);
             }
 
             return notification == null ? HttpResponseMessageHelper.BadRequest() :
-                HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(notification));
+                HttpResponseMessageHelper.Created(noti);
         }
     }
 }
