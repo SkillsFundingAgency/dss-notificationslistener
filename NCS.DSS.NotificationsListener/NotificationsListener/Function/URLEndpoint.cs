@@ -13,6 +13,9 @@ using NCS.DSS.NotificationsListener.Cosmos.Helper;
 using NCS.DSS.NotificationsListener.Helpers;
 using NCS.DSS.NotificationsListener.Ioc;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Primitives;
+using System.Text;
+using System.Collections.Generic;
 
 namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
 {
@@ -52,15 +55,22 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
             else
             {
 
-                if (req.Headers.GetValues("Bearer") != null)
+                string authHeader = string.Empty;
+
+                if (req.Headers.TryGetValues("Authorization", out IEnumerable<string> authToken))
                 {
-                    bearer = req.Headers.GetValues("Bearer").ToString();
+                    authHeader = authToken.First();
                 }
+                else
+                {
+                    log.LogInformation("Authorization header error !");
+                }
+
 
                 noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
                        "URL : " + notification.ResourceURL + Environment.NewLine +
                        "LastModifiedDate : " + notification.LastModifiedDate.ToString() +
-                       "Bearer : " + bearer;
+                       "Bearer : " + authHeader;
                 
                 log.LogInformation(noti);
             }
