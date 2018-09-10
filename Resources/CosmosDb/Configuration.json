@@ -1,10 +1,10 @@
 {
   "Databases": [
     {
-      "DatabaseName": "transfers",
+      "DatabaseName": "notifications",
       "Collections": [
         {
-          "CollectionName": "transfers",
+          "CollectionName": "notifications",
           "OfferThroughput": 1000,
           "StoredProcedures": []
         }

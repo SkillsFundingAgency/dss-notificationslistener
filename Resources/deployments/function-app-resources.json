@@ -5,6 +5,18 @@
     "appServicePlanId": {
       "type": "string"
     },
+    "cosmosDbCollectionId": {
+      "type": "string"
+    },
+    "cosmosDbDatabaseId": {
+      "type": "string"
+    },
+    "cosmosDbEndpoint": {
+      "type": "string"
+    },
+    "cosmosDbKey": {
+      "type": "string"
+    },
     "configEnvironmentName": {
       "type": "string"
     },
@@ -46,6 +58,22 @@
             {
               "name": "ServiceBusConnectionString",
               "value": "[parameters('serviceBusConnectionString')]"
+            },
+            {
+              "name": "CollectionId",
+              "value": "[parameters('cosmosDbCollectionId')]"
+            },
+            {
+              "name": "DatabaseId",
+              "value": "[parameters('cosmosDbDatabaseId')]"
+            },
+            {
+              "name": "Endpoint",
+              "value": "[parameters('cosmosDbEndpoint')]"
+            },
+            {
+              "name": "Key",
+              "value": "[parameters('cosmosDbKey')]"
             }
           ]
         }
