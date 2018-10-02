@@ -76,7 +76,7 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
             }
 
             return notification == null ? HttpResponseMessageHelper.BadRequest() :
-                HttpResponseMessageHelper.Created(noti);
+                HttpResponseMessageHelper.Ok(noti);
         }
     }
 }
