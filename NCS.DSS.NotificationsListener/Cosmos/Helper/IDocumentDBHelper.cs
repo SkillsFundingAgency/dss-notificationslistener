@@ -8,5 +8,6 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Helper
         Uri CreateDocumentUri(Guid transferId);
         Uri CreateCustomerDocumentCollectionUri();
         Uri CreateInteractionDocumentCollectionUri();
+        Uri CreateListenerNotificationDocumentCollectionUri();
     }
 }

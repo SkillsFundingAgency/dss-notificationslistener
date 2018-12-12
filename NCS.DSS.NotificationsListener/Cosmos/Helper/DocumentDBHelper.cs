@@ -20,6 +20,10 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Helper
         private readonly string _interactionDatabaseId = ConfigurationManager.AppSettings["InteractionDatabaseId"];
         private readonly string _interactionCollectionId = ConfigurationManager.AppSettings["InteractionCollectionId"];
 
+        private Uri _ListenerNotificationDocumentCollectionUri;
+        private readonly string _ListenerNotificationDatabaseId = ConfigurationManager.AppSettings["ListenerDatabaseId"];
+        private readonly string _ListenerNotificationCollectionId = ConfigurationManager.AppSettings["ListenerCollectionId"];
+
 
         public Uri CreateDocumentCollectionUri()
         {
@@ -72,7 +76,23 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Helper
             return _interactionDocumentCollectionUri;
         }
 
+        #endregion
+
+        #region ListenerNotificationDB
+
+        public Uri CreateListenerNotificationDocumentCollectionUri()
+        {
+            if (_ListenerNotificationDocumentCollectionUri != null)
+                return _ListenerNotificationDocumentCollectionUri;
+
+            _ListenerNotificationDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
+                _ListenerNotificationDatabaseId, _ListenerNotificationCollectionId);
+
+            return _ListenerNotificationDocumentCollectionUri;
+        }
+
         #endregion   
+
 
     }
 }
