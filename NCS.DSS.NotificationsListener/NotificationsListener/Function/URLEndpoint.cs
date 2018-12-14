@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Primitives;
 using System.Text;
 using System.Collections.Generic;
+using NCS.DSS.NotificationsListener.Util;
 
 namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
 {
@@ -73,6 +74,9 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
                        "Bearer : " + authHeader;
 
                 log.LogInformation(noti);
+
+                await SaveNotificationToDatabase.SaveNotificationToDBAsync(notification);
+
             }
 
             return notification == null ? HttpResponseMessageHelper.BadRequest() :

@@ -73,5 +73,22 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Provider
             return interactionQuery.Where(x => x.Id == interactionId.ToString()).Select(x => x.Id).AsEnumerable().Any();
         }
 
+
+        public async Task<ResourceResponse<Document>> CreateListenerNotificationAsync(Models.Notification noti)
+        {
+
+            var collectionUri = _documentDbHelper.CreateListenerNotificationDocumentCollectionUri();
+
+            var client = _databaseClient.CreateDocumentClient();
+
+            if (client == null)
+                return null;
+
+            var response = await client.CreateDocumentAsync(collectionUri, noti);
+
+            return response;
+
+        }
+
     }
 }

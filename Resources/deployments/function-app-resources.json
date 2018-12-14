@@ -64,20 +64,20 @@
               "value": "[parameters('serviceBusConnectionString')]"
             },
             {
-              "name": "CollectionId",
-              "value": "[parameters('cosmosDbCollectionId')]"
-            },
-            {
-              "name": "DatabaseId",
-              "value": "[parameters('cosmosDbDatabaseId')]"
-            },
-            {
               "name": "Endpoint",
               "value": "[parameters('cosmosDbEndpoint')]"
             },
             {
               "name": "Key",
               "value": "[parameters('cosmosDbKey')]"
+            },
+            {
+              "name": "ListenerCollectionId",
+              "value": "[parameters('cosmosDbCollectionId')]"
+            },
+            {
+              "name": "ListenerDatabaseId",
+              "value": "[parameters('cosmosDbDatabaseId')]"
             }
           ]
         }
