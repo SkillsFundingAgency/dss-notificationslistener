@@ -17,6 +17,7 @@ using Microsoft.Extensions.Primitives;
 using System.Text;
 using System.Collections.Generic;
 using NCS.DSS.NotificationsListener.Util;
+using System.Configuration;
 
 namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
 {
@@ -35,52 +36,62 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper)
         {
 
-            string noti;
-            string bearer = string.Empty;
+            string ListenerAppSetting = ConfigurationManager.AppSettings["ListenerTestResponse"].ToString();
 
-            Models.Notification notification;
-
-            try
+            if (ListenerAppSetting != "")
             {
-                notification = await httpRequestMessageHelper.GetMessageFromRequest<Models.Notification>(req);
-            }
-            catch (JsonException ex)
-            {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
-            }
-
-            if (notification == null)
-            {
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+                return HttpResponseMessageHelper.BadRequest();
             }
             else
             {
 
-                string authHeader = string.Empty;
+                string noti;
+                string bearer = string.Empty;
 
-                if (req.Headers.TryGetValues("Authorization", out IEnumerable<string> authToken))
+                Models.Notification notification;
+
+                try
                 {
-                    authHeader = authToken.First();
+                    notification = await httpRequestMessageHelper.GetMessageFromRequest<Models.Notification>(req);
+                }
+                catch (JsonException ex)
+                {
+                    return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                }
+
+                if (notification == null)
+                {
+                    return HttpResponseMessageHelper.UnprocessableEntity(req);
                 }
                 else
                 {
-                    log.LogInformation("Authorization header error !");
+
+                    string authHeader = string.Empty;
+
+                    if (req.Headers.TryGetValues("Authorization", out IEnumerable<string> authToken))
+                    {
+                        authHeader = authToken.First();
+                    }
+                    else
+                    {
+                        log.LogInformation("Authorization header error !");
+                    }
+
+
+                    noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
+                           "URL : " + notification.ResourceURL + Environment.NewLine +
+                           "LastModifiedDate : " + notification.LastModifiedDate.ToString() +
+                           "Bearer : " + authHeader;
+
+                    log.LogInformation(noti);
+
+                    await SaveNotificationToDatabase.SaveNotificationToDBAsync(notification);
+
                 }
 
-
-                noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
-                       "URL : " + notification.ResourceURL + Environment.NewLine +
-                       "LastModifiedDate : " + notification.LastModifiedDate.ToString() +
-                       "Bearer : " + authHeader;
-
-                log.LogInformation(noti);
-
-                await SaveNotificationToDatabase.SaveNotificationToDBAsync(notification);
-
+                return notification == null ? HttpResponseMessageHelper.BadRequest() :
+                    HttpResponseMessageHelper.Ok(noti);
             }
-
-            return notification == null ? HttpResponseMessageHelper.BadRequest() :
-                HttpResponseMessageHelper.Ok(noti);
         }
     }
 }
