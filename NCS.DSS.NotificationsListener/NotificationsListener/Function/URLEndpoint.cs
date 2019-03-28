@@ -50,37 +50,46 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
             }
 
             if (notification == null)
-            {
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            string authHeader = string.Empty;
+
+            if (req.Headers.TryGetValues("Authorization", out IEnumerable<string> authToken))
+            {
+                authHeader = authToken.First();
             }
             else
             {
-
-                string authHeader = string.Empty;
-
-                if (req.Headers.TryGetValues("Authorization", out IEnumerable<string> authToken))
-                {
-                    authHeader = authToken.First();
-                }
-                else
-                {
-                    log.LogInformation("Authorization header error !");
-                }
-
-
-                noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
-                       "URL : " + notification.ResourceURL + Environment.NewLine +
-                       "LastModifiedDate : " + notification.LastModifiedDate.ToString() +
-                       "Bearer : " + authHeader;
-
-                log.LogInformation(noti);
-
-                await SaveNotificationToDatabase.SaveNotificationToDBAsync(notification);
-
+                log.LogInformation("Authorization header error !");
             }
 
-            return notification == null ? HttpResponseMessageHelper.BadRequest() :
-                HttpResponseMessageHelper.Ok(noti);
+            if (notification.ResourceURL != null)
+            {
+                if (notification.ResourceURL.ToString().Contains("collections"))
+                {
+                    var lastIndexOf = notification.ResourceURL.ToString().LastIndexOf("/", StringComparison.Ordinal);
+                    if (lastIndexOf != -1)
+                    {
+                        var collectionId = notification.ResourceURL.ToString().Substring(lastIndexOf + 1);
+
+                       if(Guid.TryParse(collectionId, out var collectionGuid))
+                           notification.CollectionId = collectionGuid;
+                    }
+                }
+            }
+
+            noti = "Customer Id : " + notification.CustomerId + Environment.NewLine +
+                   "URL : " + notification.ResourceURL + Environment.NewLine +
+                   "LastModifiedDate : " + notification.LastModifiedDate + Environment.NewLine +
+                   "Touchpoint Id : " + notification.TouchpointId + Environment.NewLine +
+                   "Collection Id : " + notification.CollectionId + Environment.NewLine +
+                   "Bearer : " + authHeader;
+
+            log.LogInformation(noti);
+
+            await SaveNotificationToDatabase.SaveNotificationToDBAsync(notification);
+
+            return HttpResponseMessageHelper.Ok(noti);
         }
     }
 }

@@ -5,3 +5,4 @@
 /.vs
 /NCS.DSS.NotificationsListener/bin
 /NCS.DSS.NotificationsListener/obj
+/NCS.DSS.NotificationsListener/local.settings.json
