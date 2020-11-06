@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
+﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Microsoft.Extensions.Configuration;
 using NCS.DSS.NotificationsListener.Cosmos.Client;
 using NCS.DSS.NotificationsListener.Cosmos.Helper;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.NotificationsListener.Cosmos.Provider
 {
@@ -15,10 +15,10 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Provider
         private readonly DocumentDBHelper _documentDbHelper;
         private readonly DocumentDBClient _databaseClient;
 
-        public DocumentDBProvider()
+        public DocumentDBProvider(IConfiguration config)
         {
-            _documentDbHelper = new DocumentDBHelper();
-            _databaseClient = new DocumentDBClient();
+            _documentDbHelper = new DocumentDBHelper(config);
+            _databaseClient = new DocumentDBClient(config);
         }
 
         public bool DoesCustomerResourceExist(Guid customerId)

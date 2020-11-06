@@ -1,29 +1,31 @@
 ﻿
-using System;
-using System.Configuration;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace NCS.DSS.NotificationsListener.Cosmos.Helper
 {
     public class DocumentDBHelper : IDocumentDBHelper
     {
+        private readonly IConfiguration _configuration;
         private Uri _documentCollectionUri;
         private Uri _documentUri;
-        private readonly string _databaseId = ConfigurationManager.AppSettings["DatabaseId"];
-        private readonly string _collectionId = ConfigurationManager.AppSettings["CollectionId"];
-
-        private Uri _customerDocumentCollectionUri;
-        private readonly string _customerDatabaseId = ConfigurationManager.AppSettings["CustomerDatabaseId"];
-        private readonly string _customerCollectionId = ConfigurationManager.AppSettings["CustomerCollectionId"];
-
+        private string _databaseId => _configuration.GetValue<string>("DatabaseId");
+        private string _collectionId => _configuration.GetValue<string>("CollectionId");
+        private string _customerDatabaseId => _configuration.GetValue<string>("CustomerDatabaseId");
+        private string _customerCollectionId => _configuration.GetValue<string>("CustomerCollectionId");
         private Uri _interactionDocumentCollectionUri;
-        private readonly string _interactionDatabaseId = ConfigurationManager.AppSettings["InteractionDatabaseId"];
-        private readonly string _interactionCollectionId = ConfigurationManager.AppSettings["InteractionCollectionId"];
-
+        private string _interactionDatabaseId => _configuration.GetValue<string>("InteractionDatabaseId");
+        private string _interactionCollectionId => _configuration.GetValue<string>("InteractionCollectionId");
         private Uri _ListenerNotificationDocumentCollectionUri;
-        private readonly string _ListenerNotificationDatabaseId = ConfigurationManager.AppSettings["ListenerDatabaseId"];
-        private readonly string _ListenerNotificationCollectionId = ConfigurationManager.AppSettings["ListenerCollectionId"];
+        private string _ListenerNotificationDatabaseId => _configuration.GetValue<string>("ListenerDatabaseId");
+        private string _ListenerNotificationCollectionId => _configuration.GetValue<string>("ListenerCollectionId");
+        private Uri _customerDocumentCollectionUri;
 
+        public DocumentDBHelper(IConfiguration config)
+        {
+            _configuration = config;
+        }
 
         public Uri CreateDocumentCollectionUri()
         {
