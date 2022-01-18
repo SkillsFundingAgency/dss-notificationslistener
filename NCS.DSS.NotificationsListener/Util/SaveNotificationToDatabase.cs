@@ -1,19 +1,22 @@
-﻿using NCS.DSS.NotificationsListener.Cosmos.Provider;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.Extensions.Configuration;
+using NCS.DSS.NotificationsListener.Cosmos.Provider;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.NotificationsListener.Util
 {
-    class SaveNotificationToDatabase
+    public class SaveNotificationToDatabase : ISaveNotificationToDatabase
     {
-        public static async Task SaveNotificationToDBAsync(Models.Notification notification)
+        public IConfiguration _configuration;
+
+        public SaveNotificationToDatabase(IConfiguration config)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            await documentDbProvider.CreateListenerNotificationAsync(notification);
+            _configuration = config;
         }
 
+        public async Task SaveNotificationToDBAsync(Models.Notification notification)
+        {
+            var documentDbProvider = new DocumentDBProvider(_configuration);
+            await documentDbProvider.CreateListenerNotificationAsync(notification);
+        }
     }
 }

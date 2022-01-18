@@ -1,38 +1,49 @@
+using DFC.HTTP.Standard;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using NCS.DSS.NotificationsListener.Annotations;
+using NCS.DSS.NotificationsListener.Cosmos.Helper;
+using NCS.DSS.NotificationsListener.Util;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http.Description;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using NCS.DSS.NotificationsListener.Annotations;
-using NCS.DSS.NotificationsListener.Cosmos.Helper;
-using NCS.DSS.NotificationsListener.Helpers;
-using NCS.DSS.NotificationsListener.Ioc;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Primitives;
-using System.Text;
-using System.Collections.Generic;
-using NCS.DSS.NotificationsListener.Util;
 
 namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
 {
-    public static class NotificationsListenerHttpTrigger
+    public class NotificationsListenerHttpTrigger
     {
+        private readonly IResourceHelper _resourceHelper;
+        private readonly IHttpRequestHelper _httpRequestMessageHelper;
+        private readonly IHttpResponseMessageHelper _httpResponseMessageHelper;
+        private readonly ISaveNotificationToDatabase _saveNotification;
+
+        public NotificationsListenerHttpTrigger(IResourceHelper resourceHelper, IHttpRequestHelper httpRequestMessageHelper, IHttpResponseMessageHelper httpResponseMessageHelper, ISaveNotificationToDatabase saveNotifcation)
+        {
+            _resourceHelper = resourceHelper;
+            _httpRequestMessageHelper = httpRequestMessageHelper;
+            _httpResponseMessageHelper = httpResponseMessageHelper;
+            _saveNotification = saveNotifcation;
+        }
+
+
         [FunctionName("Post")]
-        [ResponseType(typeof(Models.Notification))]
+        [ProducesResponseTypeAttribute(typeof(Models.Notification), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Notification Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Notification does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new transfer resource.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "URLEndpoint")]HttpRequestMessage req, 
-            ILogger log, [Inject]IResourceHelper resourceHelper,
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper)
+        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "URLEndpoint")] HttpRequest req, 
+            ILogger log)
         {
 
             string noti;
@@ -42,19 +53,19 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
 
             try
             {
-                notification = await httpRequestMessageHelper.GetMessageFromRequest<Models.Notification>(req);
+                notification = await _httpRequestMessageHelper.GetResourceFromRequest<Models.Notification>(req);
             }
             catch (JsonException ex)
             {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                return _httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (notification == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+                return _httpResponseMessageHelper.UnprocessableEntity();
 
             string authHeader = string.Empty;
 
-            if (req.Headers.TryGetValues("Authorization", out IEnumerable<string> authToken))
+            if (req.Headers.TryGetValue("Authorization", out StringValues authToken))
             {
                 authHeader = authToken.First();
             }
@@ -87,9 +98,9 @@ namespace NCS.DSS.NotificationsListener.URLEndpoint.Function
 
             log.LogInformation(noti);
 
-            await SaveNotificationToDatabase.SaveNotificationToDBAsync(notification);
+            await _saveNotification.SaveNotificationToDBAsync(notification);
 
-            return HttpResponseMessageHelper.Ok(noti);
+            return _httpResponseMessageHelper.Ok(noti);
         }
     }
 }
