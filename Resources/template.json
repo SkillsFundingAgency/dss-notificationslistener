@@ -31,6 +31,12 @@
     },
     "templateBaseUrl": {
       "type": "string"
+    },
+    "workspaceName": {
+      "type": "string"
+    },
+    "workspaceResourceGroup": {
+      "type": "string"
     }
   },
     "variables": {
@@ -72,6 +78,9 @@
                 },
                 "serviceBusConnectionString": {
                   "value": "[parameters('serviceBusConnectionString')]"
+                },
+                "workspaceId": {
+                  "value": "[resourceId(parameters('workspaceResourceGroup'), 'Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
                 }
               }
             },
