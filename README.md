@@ -1,4 +1,4 @@
-# DSS Notification Listener
+# DSS Notifications Listener
 
 > [!NOTE]  
 > The latest version of this API is `v1`
