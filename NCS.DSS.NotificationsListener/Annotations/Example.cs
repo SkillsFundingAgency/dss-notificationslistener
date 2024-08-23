@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NCS.DSS.NotificationsListener.Annotations
+﻿namespace NCS.DSS.NotificationsListener.Annotations
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class Example : Attribute

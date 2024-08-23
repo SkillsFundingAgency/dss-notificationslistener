@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NCS.DSS.NotificationsListener.Cosmos.Helper
+﻿namespace NCS.DSS.NotificationsListener.Cosmos.Helper
 {
     public interface IDocumentDBHelper
     {

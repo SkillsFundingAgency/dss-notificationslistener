@@ -1,7 +1,6 @@
 ﻿
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace NCS.DSS.NotificationsListener.Cosmos.Helper
 {
@@ -38,7 +37,7 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Helper
 
             return _documentCollectionUri;
         }
-        
+
         public Uri CreateDocumentUri(Guid transferId)
         {
             if (_documentUri != null)

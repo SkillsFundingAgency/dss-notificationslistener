@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NCS.DSS.NotificationsListener.Models
+﻿namespace NCS.DSS.NotificationsListener.Models
 {
     public class Notification
     {

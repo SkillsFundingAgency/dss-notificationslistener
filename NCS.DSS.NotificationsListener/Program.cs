@@ -7,8 +7,6 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.NotificationsListener.Cosmos.Helper;
 using NCS.DSS.NotificationsListener.Cosmos.Provider;
 using NCS.DSS.NotificationsListener.Util;
-using System;
-using System.Linq;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()

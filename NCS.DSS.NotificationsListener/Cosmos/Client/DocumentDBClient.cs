@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace NCS.DSS.NotificationsListener.Cosmos.Client
 {

@@ -4,9 +4,6 @@ using Microsoft.Azure.Documents.Linq;
 using Microsoft.Extensions.Configuration;
 using NCS.DSS.NotificationsListener.Cosmos.Client;
 using NCS.DSS.NotificationsListener.Cosmos.Helper;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.NotificationsListener.Cosmos.Provider
 {

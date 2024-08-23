@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace NCS.DSS.NotificationsListener.Cosmos.Provider
+﻿namespace NCS.DSS.NotificationsListener.Cosmos.Provider
 {
     public interface IDocumentDBProvider
     {

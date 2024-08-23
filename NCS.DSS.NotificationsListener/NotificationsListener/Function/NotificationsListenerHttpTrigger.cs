@@ -7,12 +7,9 @@ using Microsoft.Extensions.Primitives;
 using NCS.DSS.NotificationsListener.Annotations;
 using NCS.DSS.NotificationsListener.Cosmos.Helper;
 using NCS.DSS.NotificationsListener.Util;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Web.Http;
 using JsonException = Newtonsoft.Json.JsonException;
 
@@ -27,7 +24,7 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
         private static readonly string[] PropertyToExclude = { "TargetSite" };
 
         public NotificationsListenerHttpTrigger(
-            IHttpRequestHelper httpRequestMessageHelper, 
+            IHttpRequestHelper httpRequestMessageHelper,
             ISaveNotificationToDatabase saveNotification,
             ILogger<NotificationsListenerHttpTrigger> logger,
             IDynamicHelper dynamicHelper)

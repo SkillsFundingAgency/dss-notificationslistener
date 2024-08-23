@@ -8,8 +8,8 @@ using NCS.DSS.NotificationsListener.Models;
 using NCS.DSS.NotificationsListener.NotificationsListener.Function;
 using NCS.DSS.NotificationsListener.Util;
 using Newtonsoft.Json;
-using System.Net;
 using NUnit.Framework;
+using System.Net;
 
 namespace NCS.DSS.NotificationsListener.Tests
 {
@@ -34,9 +34,9 @@ namespace NCS.DSS.NotificationsListener.Tests
             _loggerMock = new Mock<ILogger<NotificationsListenerHttpTrigger>>();
             _dynamicHelperMock = new Mock<IDynamicHelper>();
             _function = new NotificationsListenerHttpTrigger(
-                _httpRequestHelperMock.Object, 
-                _saveNotificationMock.Object, 
-                _loggerMock.Object, 
+                _httpRequestHelperMock.Object,
+                _saveNotificationMock.Object,
+                _loggerMock.Object,
                 _dynamicHelperMock.Object);
         }
 
