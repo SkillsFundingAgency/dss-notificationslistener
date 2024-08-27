@@ -17,58 +17,6 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Provider
             _databaseClient = new DocumentDBClient(config);
         }
 
-        //public bool DoesCustomerResourceExist(Guid customerId)
-        //{
-        //    var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
-
-        //    var client = _databaseClient.CreateDocumentClient();
-
-        //    if (client == null)
-        //        return false;
-
-        //    var customerQuery = client.CreateDocumentQuery<Document>(collectionUri, new FeedOptions() { MaxItemCount = 1 });
-        //    return customerQuery.Where(x => x.Id == customerId.ToString()).Select(x => x.Id).AsEnumerable().Any();
-        //}
-
-        //public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
-        //{
-        //    var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
-
-        //    var client = _databaseClient.CreateDocumentClient();
-
-        //    var customerByIdQuery = client
-        //        ?.CreateDocumentQuery<Document>(collectionUri, new FeedOptions { MaxItemCount = 1 })
-        //        .Where(x => x.Id == customerId.ToString())
-        //        .AsDocumentQuery();
-
-        //    if (customerByIdQuery == null)
-        //        return false;
-
-        //    var customerQuery = await customerByIdQuery.ExecuteNextAsync<Document>();
-
-        //    var customer = customerQuery?.FirstOrDefault();
-
-        //    if (customer == null)
-        //        return false;
-
-        //    var dateOfTermination = customer.GetPropertyValue<DateTime?>("DateOfTermination");
-
-        //    return dateOfTermination.HasValue;
-        //}
-
-        //public bool DoesInteractionResourceExist(Guid interactionId)
-        //{
-        //    var collectionUri = _documentDbHelper.CreateInteractionDocumentCollectionUri();
-
-        //    var client = _databaseClient.CreateDocumentClient();
-
-        //    if (client == null)
-        //        return false;
-
-        //    var interactionQuery = client.CreateDocumentQuery<Document>(collectionUri, new FeedOptions() { MaxItemCount = 1 });
-        //    return interactionQuery.Where(x => x.Id == interactionId.ToString()).Select(x => x.Id).AsEnumerable().Any();
-        //}
-
         public async Task<ResourceResponse<Document>> CreateListenerNotificationAsync(Models.Notification noti)
         {
             var collectionUri = _documentDbHelper.CreateListenerNotificationDocumentCollectionUri();
