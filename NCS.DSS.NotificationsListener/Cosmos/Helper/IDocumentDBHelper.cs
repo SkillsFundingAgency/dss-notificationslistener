@@ -2,10 +2,10 @@
 {
     public interface IDocumentDBHelper
     {
-        Uri CreateDocumentCollectionUri();
-        Uri CreateDocumentUri(Guid transferId);
-        Uri CreateCustomerDocumentCollectionUri();
-        Uri CreateInteractionDocumentCollectionUri();
+        //Uri CreateDocumentCollectionUri();
+        //Uri CreateDocumentUri(Guid transferId);
+        //Uri CreateCustomerDocumentCollectionUri();
+        //Uri CreateInteractionDocumentCollectionUri();
         Uri CreateListenerNotificationDocumentCollectionUri();
     }
 }

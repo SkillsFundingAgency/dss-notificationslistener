@@ -6,80 +6,71 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Helper
 {
     public class DocumentDBHelper : IDocumentDBHelper
     {
+        //private Uri _documentCollectionUri;
+        //private Uri _documentUri;
+        //private string _databaseId => _configuration.GetValue<string>("DatabaseId");
+        //private string _collectionId => _configuration.GetValue<string>("CollectionId");
+        //private string _customerDatabaseId => _configuration.GetValue<string>("CustomerDatabaseId");
+        //private string _customerCollectionId => _configuration.GetValue<string>("CustomerCollectionId");
+        //private Uri _interactionDocumentCollectionUri;
+        //private string _interactionDatabaseId => _configuration.GetValue<string>("InteractionDatabaseId");
+        //private string _interactionCollectionId => _configuration.GetValue<string>("InteractionCollectionId");
+        //private Uri _customerDocumentCollectionUri;
+
         private readonly IConfiguration _configuration;
-        private Uri _documentCollectionUri;
-        private Uri _documentUri;
-        private string _databaseId => _configuration.GetValue<string>("DatabaseId");
-        private string _collectionId => _configuration.GetValue<string>("CollectionId");
-        private string _customerDatabaseId => _configuration.GetValue<string>("CustomerDatabaseId");
-        private string _customerCollectionId => _configuration.GetValue<string>("CustomerCollectionId");
-        private Uri _interactionDocumentCollectionUri;
-        private string _interactionDatabaseId => _configuration.GetValue<string>("InteractionDatabaseId");
-        private string _interactionCollectionId => _configuration.GetValue<string>("InteractionCollectionId");
         private Uri _ListenerNotificationDocumentCollectionUri;
         private string _ListenerNotificationDatabaseId => _configuration.GetValue<string>("ListenerDatabaseId");
         private string _ListenerNotificationCollectionId => _configuration.GetValue<string>("ListenerCollectionId");
-        private Uri _customerDocumentCollectionUri;
 
         public DocumentDBHelper(IConfiguration config)
         {
             _configuration = config;
         }
 
-        public Uri CreateDocumentCollectionUri()
-        {
-            if (_documentCollectionUri != null)
-                return _documentCollectionUri;
+        //public Uri CreateDocumentCollectionUri()
+        //{
+        //    if (_documentCollectionUri != null)
+        //        return _documentCollectionUri;
 
-            _documentCollectionUri = UriFactory.CreateDocumentCollectionUri(
-                _databaseId,
-                _collectionId);
+        //    _documentCollectionUri = UriFactory.CreateDocumentCollectionUri(
+        //        _databaseId,
+        //        _collectionId);
 
-            return _documentCollectionUri;
-        }
+        //    return _documentCollectionUri;
+        //}
 
-        public Uri CreateDocumentUri(Guid transferId)
-        {
-            if (_documentUri != null)
-                return _documentUri;
+        //public Uri CreateDocumentUri(Guid transferId)
+        //{
+        //    if (_documentUri != null)
+        //        return _documentUri;
 
-            _documentUri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, transferId.ToString());
+        //    _documentUri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, transferId.ToString());
 
-            return _documentUri;
+        //    return _documentUri;
 
-        }
+        //}
 
-        #region CustomerDB
+        //public Uri CreateCustomerDocumentCollectionUri()
+        //{
+        //    if (_customerDocumentCollectionUri != null)
+        //        return _customerDocumentCollectionUri;
 
-        public Uri CreateCustomerDocumentCollectionUri()
-        {
-            if (_customerDocumentCollectionUri != null)
-                return _customerDocumentCollectionUri;
+        //    _customerDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
+        //        _customerDatabaseId, _customerCollectionId);
 
-            _customerDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
-                _customerDatabaseId, _customerCollectionId);
+        //    return _customerDocumentCollectionUri;
+        //}
 
-            return _customerDocumentCollectionUri;
-        }
+        //public Uri CreateInteractionDocumentCollectionUri()
+        //{
+        //    if (_interactionDocumentCollectionUri != null)
+        //        return _interactionDocumentCollectionUri;
 
-        #endregion
+        //    _interactionDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
+        //        _interactionDatabaseId, _interactionCollectionId);
 
-        #region InteractionDB
-
-        public Uri CreateInteractionDocumentCollectionUri()
-        {
-            if (_interactionDocumentCollectionUri != null)
-                return _interactionDocumentCollectionUri;
-
-            _interactionDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
-                _interactionDatabaseId, _interactionCollectionId);
-
-            return _interactionDocumentCollectionUri;
-        }
-
-        #endregion
-
-        #region ListenerNotificationDB
+        //    return _interactionDocumentCollectionUri;
+        //}
 
         public Uri CreateListenerNotificationDocumentCollectionUri()
         {
@@ -91,9 +82,5 @@ namespace NCS.DSS.NotificationsListener.Cosmos.Helper
 
             return _ListenerNotificationDocumentCollectionUri;
         }
-
-        #endregion   
-
-
     }
 }
