@@ -1,7 +1,7 @@
 # DSS Notifications Listener
 
 > [!NOTE]  
-> The latest version of this API is `v1`
+> This resource is not exposed via APIM, and therefore isn't a versioned API
 
 [![Build Status](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_apis/build/status/Yaml/dss-notificationslistener?repoName=SkillsFundingAgency%2Fdss-notificationslistener&branchName=master)](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_build/latest?definitionId=2306&repoName=SkillsFundingAgency%2Fdss-notificationslistener&branchName=master)
 

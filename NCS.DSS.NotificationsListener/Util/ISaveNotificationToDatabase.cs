@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace NCS.DSS.NotificationsListener.Util
+﻿namespace NCS.DSS.NotificationsListener.Util
 {
     public interface ISaveNotificationToDatabase
     {
