@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using NCS.DSS.NotificationsListener.Cosmos.Provider;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.NotificationsListener.Util
 {
