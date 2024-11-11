@@ -68,10 +68,6 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
-              "name": "ServiceBusConnectionString",
-              "value": "[parameters('serviceBusConnectionString')]"
-            },
-            {
               "name": "Endpoint",
               "value": "[parameters('cosmosDbEndpoint')]"
             },
