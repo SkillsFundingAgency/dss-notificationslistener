@@ -4,66 +4,66 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using NCS.DSS.NotificationsListener.Annotations;
-using NCS.DSS.NotificationsListener.Cosmos.Helper;
-using NCS.DSS.NotificationsListener.Util;
+using NCS.DSS.NotificationsListener.Services;
+using NCS.DSS.NotificationsListener.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
-using System.Web.Http;
 using JsonException = Newtonsoft.Json.JsonException;
+using Microsoft.Azure.Cosmos;
 
 namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
 {
     public class NotificationsListenerHttpTrigger
     {
         private readonly IHttpRequestHelper _httpRequestMessageHelper;
-        private readonly ISaveNotificationToDatabase _saveNotification;
-        private readonly ILogger _logger;
+        private readonly ILogger<NotificationsListenerHttpTrigger> _logger;
         private readonly IDynamicHelper _dynamicHelper;
+        private readonly ICosmosDBService _cosmosDBService;
+
         private static readonly string[] PropertyToExclude = { "TargetSite" };
 
         public NotificationsListenerHttpTrigger(
             IHttpRequestHelper httpRequestMessageHelper,
-            ISaveNotificationToDatabase saveNotification,
             ILogger<NotificationsListenerHttpTrigger> logger,
-            IDynamicHelper dynamicHelper)
-        {
+            IDynamicHelper dynamicHelper,
+            ICosmosDBService cosmosDBService
+        ) {
             _httpRequestMessageHelper = httpRequestMessageHelper;
-            _saveNotification = saveNotification;
             _logger = logger;
             _dynamicHelper = dynamicHelper;
+            _cosmosDBService = cosmosDBService;
         }
 
         [Function("Post")]
-        [ProducesResponseType(typeof(Models.Notification), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Notification), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Notification Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Notification does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
-        [Display(Name = "Post", Description = "Ability to create a new transfer resource.")]
+        [Display(Name = "Post", Description = "Mock DSS Prime notification behaviour")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "URLEndpoint")] HttpRequest req)
         {
-            _logger.LogInformation("Processing a new notification request.");
+            _logger.LogInformation($"{typeof(NotificationsListenerHttpTrigger)} has been invoked");
+            _logger.LogInformation("Attempting to deserialize the notification from the request");
 
-            Models.Notification notification;
+            Notification notification;
 
             try
             {
-                _logger.LogInformation("Attempting to deserialize the notification from the request.");
-                notification = await _httpRequestMessageHelper.GetResourceFromRequest<Models.Notification>(req);
+                notification = await _httpRequestMessageHelper.GetResourceFromRequest<Notification>(req);
+
+                if (notification == null)
+                {
+                    _logger.LogError("Notification object is null after deserialization.");
+                    return new UnprocessableEntityResult();
+                }
             }
             catch (JsonException ex)
             {
-                _logger.LogError(ex, "Failed to deserialize the notification.");
+                _logger.LogError(ex, "Failed to deserialize the notification from the request body");
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
-            }
-
-            if (notification == null)
-            {
-                _logger.LogWarning("Notification is null after deserialization.");
-                return new UnprocessableEntityResult();
             }
 
             string authHeader = string.Empty;
@@ -71,16 +71,17 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
             if (req.Headers.TryGetValue("Authorization", out StringValues authToken))
             {
                 authHeader = authToken.First();
-                _logger.LogInformation("Authorization header found.");
+                _logger.LogInformation("Authorization header found from request header");
             }
             else
             {
-                _logger.LogWarning("Authorization header is missing or invalid.");
+                _logger.LogWarning("Authorization header not found from the request header");
             }
 
             if (notification.ResourceURL != null)
             {
-                _logger.LogInformation("Processing ResourceURL: {ResourceURL}", notification.ResourceURL);
+                _logger.LogInformation($"Processing ResourceURL: {notification.ResourceURL}");
+
                 if (notification.ResourceURL.ToString().Contains("collections"))
                 {
                     var lastIndexOf = notification.ResourceURL.ToString().LastIndexOf("/", StringComparison.Ordinal);
@@ -91,49 +92,64 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
                         if (Guid.TryParse(collectionId, out var collectionGuid))
                         {
                             notification.CollectionId = collectionGuid;
-                            _logger.LogInformation("Extracted CollectionId: {CollectionId}", collectionGuid);
+                            _logger.LogInformation($"Extracted CollectionId: {collectionGuid}");
                         }
                         else
                         {
-                            _logger.LogWarning("Failed to parse CollectionId from ResourceURL.");
+                            _logger.LogWarning("Failed to parse CollectionId from ResourceURL");
                         }
                     }
                     else
                     {
-                        _logger.LogWarning("ResourceURL does not contain a valid collection identifier.");
+                        _logger.LogWarning("ResourceURL does not contain a valid collection identifier");
                     }
                 }
             }
             else
             {
-                _logger.LogWarning("Notification ResourceURL is null.");
+                _logger.LogWarning("Notification ResourceURL property is null");
             }
 
-            var noti = $"Customer Id : {notification.CustomerId}{Environment.NewLine}" +
-                   $"URL : {notification.ResourceURL}{Environment.NewLine}" +
-                   $"LastModifiedDate : {notification.LastModifiedDate}{Environment.NewLine}" +
-                   $"Touchpoint Id : {notification.TouchpointId}{Environment.NewLine}" +
-                   $"Collection Id : {notification.CollectionId}{Environment.NewLine}" +
-                   $"Bearer : {authHeader}";
-
-            _logger.LogInformation("Notification details: {NotificationDetails}", noti);
+            _logger.LogInformation($"Notification details; Customer ID: {notification.CustomerId} | URL: {notification.ResourceURL} " +
+                $"| Last Modified Date: {notification.LastModifiedDate} | Touchpoint ID: {notification.TouchpointId} | Collection GUID: {notification.CollectionId}");
+            _logger.LogInformation("Attempting to save notification to Cosmos DB");
 
             try
             {
-                _logger.LogInformation("Saving notification to the database.");
-                await _saveNotification.SaveNotificationToDBAsync(notification);
-                _logger.LogInformation("Notification saved successfully.");
+                ItemResponse<Notification> response = await _cosmosDBService.CreateNewNotificationDocument(notification);
+
+                if (response.StatusCode == HttpStatusCode.Created)
+                {
+                    _logger.LogInformation("Notification was successfully written to Cosmos DB");
+
+                    return new JsonResult(response.Resource, new JsonSerializerOptions())
+                    {
+                        StatusCode = (int)HttpStatusCode.OK // should this be 201 CREATED instead?
+                    };
+                }
+                else
+                {
+                    _logger.LogError("Failure saving Notification to Cosmos DB");
+
+                    return new JsonResult(new JsonSerializerOptions())
+                    {
+                        StatusCode = (int)HttpStatusCode.InternalServerError
+                    };
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error saving notification to the database.");
-                return new InternalServerErrorResult();
+                _logger.LogError(ex, "Failure saving Notification to Cosmos DB");
+                
+                return new JsonResult(new JsonSerializerOptions())
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
             }
-
-            return new JsonResult(noti, new JsonSerializerOptions())
+            finally
             {
-                StatusCode = (int)HttpStatusCode.OK
-            };
+                _logger.LogInformation($"{typeof(NotificationsListenerHttpTrigger)} has finished invocation");
+            }
         }
     }
 }

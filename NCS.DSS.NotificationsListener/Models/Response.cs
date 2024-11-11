@@ -1,4 +1,4 @@
-﻿namespace NCS.DSS.NotificationsListener.Annotations
+﻿namespace NCS.DSS.NotificationsListener.Models
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class Response : Attribute
