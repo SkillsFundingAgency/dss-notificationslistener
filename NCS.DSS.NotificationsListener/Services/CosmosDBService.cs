@@ -26,8 +26,6 @@ namespace NCS.DSS.NotificationsListener.Services
 
             ItemResponse<Notification> createRequestResponse = await cosmosDbContainer.CreateItemAsync(newDocument, PartitionKey.None);
 
-            _logger.LogInformation($"Status code response: {createRequestResponse.StatusCode}"); //TODO - remove this before merging
-
             _logger.LogInformation($"{nameof(CreateNewNotificationDocument)} function has finished invocation");
 
             return createRequestResponse;
