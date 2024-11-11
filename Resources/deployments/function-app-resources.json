@@ -23,7 +23,10 @@
     "functionAppName": {
       "type": "string"
     },
-    "serviceBusConnectionString": {
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountKey": {
       "type": "string"
     },
     "workspaceId": {
@@ -31,7 +34,8 @@
     }
   },
   "variables": {
-    "appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]"
+    "appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]",
+    "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=', parameters('storageAccountKey'), ';EndpointSuffix=core.windows.net')]"
   },
   "resources": [
     {
@@ -66,6 +70,10 @@
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[variables('storageAccountConnectionString')]"
             },
             {
               "name": "Endpoint",
