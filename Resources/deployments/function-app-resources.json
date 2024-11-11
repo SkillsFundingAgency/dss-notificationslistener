@@ -86,10 +86,6 @@
             {
               "name": "ListenerDatabaseId",
               "value": "[parameters('cosmosDbDatabaseId')]"
-            },
-            {
-              "name": "ListenerTestResponse",
-              "value": ""
             }
           ]
         }
