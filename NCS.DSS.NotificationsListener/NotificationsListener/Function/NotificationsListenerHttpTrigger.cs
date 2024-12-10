@@ -58,6 +58,8 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
                     _logger.LogError("Notification object is NULL after deserialization.");
                     return new UnprocessableEntityResult();
                 }
+
+                _logger.LogInformation("Successfully deserialized the Notification from the request");
             }
             catch (JsonException ex)
             {
