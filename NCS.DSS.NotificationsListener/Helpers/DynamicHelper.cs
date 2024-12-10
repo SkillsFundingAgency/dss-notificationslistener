@@ -1,6 +1,6 @@
 ﻿using System.Dynamic;
 
-namespace NCS.DSS.NotificationsListener.Services
+namespace NCS.DSS.NotificationsListener.Helpers
 {
     public class DynamicHelper : IDynamicHelper
     {
