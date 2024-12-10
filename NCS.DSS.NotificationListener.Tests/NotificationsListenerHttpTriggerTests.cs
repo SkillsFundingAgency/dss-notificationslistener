@@ -17,13 +17,13 @@ namespace NCS.DSS.NotificationsListener.Tests
     [TestFixture]
     public class NotificationsListenerHttpTriggerTests
     {
-        private Mock<IHttpRequestHelper> _httpRequestHelperMock = new Mock<IHttpRequestHelper>();
-        private Mock<ILogger<NotificationsListenerHttpTrigger>> _loggerMock = new Mock<ILogger<NotificationsListenerHttpTrigger>>();
-        private Mock<IDynamicHelper> _dynamicHelperMock = new Mock<IDynamicHelper>();
-        private Mock<ICosmosDBService> _cosmosDBServiceMock = new Mock<ICosmosDBService>();
+        private Mock<IHttpRequestHelper> _httpRequestHelperMock = null!;
+        private Mock<ILogger<NotificationsListenerHttpTrigger>> _loggerMock = null!;
+        private Mock<IDynamicHelper> _dynamicHelperMock = null!;
+        private Mock<ICosmosDBService> _cosmosDBServiceMock = null!;
 
         private HttpRequest _request = new DefaultHttpContext().Request;
-        private NotificationsListenerHttpTrigger _function = new NotificationsListenerHttpTrigger(null, null, null, null);
+        private NotificationsListenerHttpTrigger _function = null!;
 
         [SetUp]
         public void Setup()
@@ -64,7 +64,7 @@ namespace NCS.DSS.NotificationsListener.Tests
             _httpRequestHelperMock.Setup(x => x.GetResourceFromRequest<Notification>(It.IsAny<HttpRequest>()))
                                   .ReturnsAsync(notification);
 
-            _cosmosDBServiceMock.Setup(x => x.CreateNewNotificationDocument(It.IsAny<Notification>()))
+            _cosmosDBServiceMock.Setup(x => x.CreateNewNotificationDocument(It.IsAny<Notification>()))!
                                  .ReturnsAsync(notificationItemResponse.Object);
 
             // Act

@@ -20,7 +20,7 @@ namespace NCS.DSS.NotificationsListener.Services
         private static Container GetContainer(CosmosClient cosmosClient, string databaseId, string collectionId) 
             => cosmosClient.GetContainer(databaseId, collectionId);
 
-        public async Task<ItemResponse<Notification>> CreateNewNotificationDocument(Notification newDocument)
+        public async Task<ItemResponse<Notification?>> CreateNewNotificationDocument(Notification newDocument)
         {
             _logger.LogInformation("Starting {MethodName}", nameof(CreateNewNotificationDocument));
         

@@ -1,17 +1,16 @@
 using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
-using NCS.DSS.NotificationsListener.Services;
+using NCS.DSS.NotificationsListener.Helpers;
 using NCS.DSS.NotificationsListener.Models;
+using NCS.DSS.NotificationsListener.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using JsonException = Newtonsoft.Json.JsonException;
-using Microsoft.Azure.Cosmos;
-using NCS.DSS.NotificationsListener.Helpers;
 
 namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
 {
@@ -66,11 +65,8 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
             }
 
-            string authHeader = string.Empty;
-
-            if (req.Headers.TryGetValue("Authorization", out StringValues authToken))
+            if (req.Headers.TryGetValue("Authorization", out _))
             {
-                authHeader = authToken.First();
                 _logger.LogInformation("Authorization header found from request header");
             }
             else
@@ -120,7 +116,7 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
             _logger.LogInformation("Attempting to save Notification to Cosmos DB");
             try
             {
-                ItemResponse<Notification> response = await _cosmosDBService.CreateNewNotificationDocument(notification);
+                ItemResponse<Notification?> response = await _cosmosDBService.CreateNewNotificationDocument(notification);
 
                 if (response.StatusCode == HttpStatusCode.Created)
                 {
