@@ -5,6 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NCS.DSS.NotificationsListener.Helpers;
+using NCS.DSS.NotificationsListener.Models;
 using NCS.DSS.NotificationsListener.Services;
 
 namespace NCS.DSS.NotificationsListener
@@ -13,40 +16,52 @@ namespace NCS.DSS.NotificationsListener
     {
         private static async Task Main(string[] args)
         {
-            var host = new HostBuilder().ConfigureFunctionsWebApplication().ConfigureAppConfiguration(config =>
-            {
-                config.SetBasePath(Environment.CurrentDirectory).AddJsonFile("local.settings.json", optional: true, reloadOnChange: false).AddEnvironmentVariables();
-            })
-            .ConfigureServices(services =>
-            {
-                services.AddApplicationInsightsTelemetryWorkerService();
-                services.ConfigureFunctionsApplicationInsights();
-
-                services.AddSingleton<ICosmosDBService, CosmosDBService>();
-                services.AddSingleton(s =>
+            var host = new HostBuilder()
+                .ConfigureFunctionsWebApplication()
+                .ConfigureAppConfiguration(config =>
                 {
-                    string cosmosEndpoint = Environment.GetEnvironmentVariable("Endpoint");
-                    string cosmosKey = Environment.GetEnvironmentVariable("Key");
-
-                    return new CosmosClient(cosmosEndpoint, cosmosKey);
-                });
-
-                services.AddTransient<IHttpRequestHelper, HttpRequestHelper>();
-                services.AddTransient<IDynamicHelper, DynamicHelper>();
-
-                services.Configure<LoggerFilterOptions>(options =>
+                    config.SetBasePath(Environment.CurrentDirectory)
+                        .AddJsonFile("local.settings.json", optional: true, reloadOnChange: false)
+                        .AddEnvironmentVariables();
+                })
+                .ConfigureServices((context, services) =>
                 {
-                    // The Application Insights SDK adds a default logging filter that instructs ILogger to capture only Warning and more severe logs. Application Insights requires an explicit override.
-                    // Log levels can also be configured using appsettings.json. For more information, see https://learn.microsoft.com/en-us/azure/azure-monitor/app/worker-service#ilogger-logs
-                    LoggerFilterRule toRemove = options.Rules.FirstOrDefault(rule => rule.ProviderName
-                        == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
-                    if (toRemove is not null)
+                    var configuration = context.Configuration;
+                    services.AddOptions<NotificationsListenerConfigurationSettings>()
+                        .Bind(configuration);
+
+                    services.AddApplicationInsightsTelemetryWorkerService();
+                    services.ConfigureFunctionsApplicationInsights();
+                    services.AddLogging();
+
+                    services.AddTransient<IHttpRequestHelper, HttpRequestHelper>();
+                    services.AddTransient<IDynamicHelper, DynamicHelper>();
+
+                    services.AddSingleton<ICosmosDBService, CosmosDBService>();
+                    services.AddSingleton(sp =>
                     {
-                        options.Rules.Remove(toRemove);
-                    }
-                });
-            }).Build();
+                        var config = sp.GetRequiredService<IOptions<NotificationsListenerConfigurationSettings>>().Value;
+                        var options = new CosmosClientOptions()
+                        {
+                            ConnectionMode = ConnectionMode.Gateway
+                        };
 
+                        return new CosmosClient(config.Endpoint, config.Key, options);
+                    });
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging.Services.Configure<LoggerFilterOptions>(options =>
+                    {
+                        LoggerFilterRule? defaultRule = options.Rules.FirstOrDefault(rule => rule.ProviderName
+                            == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
+                        if (defaultRule is not null)
+                        {
+                            options.Rules.Remove(defaultRule);
+                        }
+                    });
+                })
+                .Build();
             await host.RunAsync();
         }
     }
