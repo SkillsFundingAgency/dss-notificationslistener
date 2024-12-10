@@ -11,58 +11,58 @@ using System.Net;
 using System.Text.Json;
 using JsonException = Newtonsoft.Json.JsonException;
 using Microsoft.Azure.Cosmos;
+using NCS.DSS.NotificationsListener.Helpers;
 
 namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
 {
     public class NotificationsListenerHttpTrigger
     {
         private readonly IHttpRequestHelper _httpRequestMessageHelper;
-        private readonly ILogger<NotificationsListenerHttpTrigger> _logger;
-        private readonly IDynamicHelper _dynamicHelper;
         private readonly ICosmosDBService _cosmosDBService;
+        private readonly IDynamicHelper _dynamicHelper;
+        private readonly ILogger<NotificationsListenerHttpTrigger> _logger;
 
         private static readonly string[] PropertyToExclude = { "TargetSite" };
 
         public NotificationsListenerHttpTrigger(
             IHttpRequestHelper httpRequestMessageHelper,
-            ILogger<NotificationsListenerHttpTrigger> logger,
+            ICosmosDBService cosmosDBService,
             IDynamicHelper dynamicHelper,
-            ICosmosDBService cosmosDBService
-        ) {
+            ILogger<NotificationsListenerHttpTrigger> logger) 
+        {
             _httpRequestMessageHelper = httpRequestMessageHelper;
-            _logger = logger;
-            _dynamicHelper = dynamicHelper;
             _cosmosDBService = cosmosDBService;
+            _dynamicHelper = dynamicHelper;
+            _logger = logger;
         }
 
-        [Function("Post")]
+        [Function("POST")]
         [ProducesResponseType(typeof(Notification), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Notification Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Notification does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
-        [Display(Name = "Post", Description = "Mock DSS Prime notification behaviour")]
+        [Display(Name = "POST", Description = "Mock DSS Prime notification behaviour")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "URLEndpoint")] HttpRequest req)
         {
-            _logger.LogInformation($"{typeof(NotificationsListenerHttpTrigger)} has been invoked");
-            _logger.LogInformation("Attempting to deserialize the notification from the request");
+            _logger.LogInformation("{FunctionName} has been invoked", typeof(NotificationsListenerHttpTrigger));
 
             Notification notification;
-
             try
             {
+                _logger.LogInformation("Attempting to deserialize the Notification from the request");
                 notification = await _httpRequestMessageHelper.GetResourceFromRequest<Notification>(req);
 
                 if (notification == null)
                 {
-                    _logger.LogError("Notification object is null after deserialization.");
+                    _logger.LogError("Notification object is NULL after deserialization.");
                     return new UnprocessableEntityResult();
                 }
             }
             catch (JsonException ex)
             {
-                _logger.LogError(ex, "Failed to deserialize the notification from the request body");
+                _logger.LogError(ex, "Failed to deserialize the Notification from the request body. Exception {ErrorMessage}", ex.Message);
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, PropertyToExclude));
             }
 
@@ -80,7 +80,7 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
 
             if (notification.ResourceURL != null)
             {
-                _logger.LogInformation($"Processing ResourceURL: {notification.ResourceURL}");
+                _logger.LogInformation("Processing ResourceURL: {ResourceURL}", notification.ResourceURL);
 
                 if (notification.ResourceURL.ToString().Contains("collections"))
                 {
@@ -92,7 +92,7 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
                         if (Guid.TryParse(collectionId, out var collectionGuid))
                         {
                             notification.CollectionId = collectionGuid;
-                            _logger.LogInformation($"Extracted CollectionId: {collectionGuid}");
+                            _logger.LogInformation("Extracted CollectionId: {CollectionGuid}", collectionGuid);
                         }
                         else
                         {
@@ -110,10 +110,14 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
                 _logger.LogWarning("Notification ResourceURL property is null");
             }
 
-            _logger.LogInformation($"Notification details; Customer ID: {notification.CustomerId} | URL: {notification.ResourceURL} " +
-                $"| Last Modified Date: {notification.LastModifiedDate} | Touchpoint ID: {notification.TouchpointId} | Collection GUID: {notification.CollectionId}");
-            _logger.LogInformation("Attempting to save notification to Cosmos DB");
+            _logger.LogInformation("Notification details; Customer ID: {CustomerId}, URL: {ResourceURL}, Last Modified Date: {LastModifiedDate}, Touchpoint ID: {TouchpointId}, Collection GUID: {CollectionId}", 
+                notification.CustomerId, 
+                notification.ResourceURL, 
+                notification.LastModifiedDate, 
+                notification.TouchpointId, 
+                notification.CollectionId);
 
+            _logger.LogInformation("Attempting to save Notification to Cosmos DB");
             try
             {
                 ItemResponse<Notification> response = await _cosmosDBService.CreateNewNotificationDocument(notification);
@@ -129,7 +133,7 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
                 }
                 else
                 {
-                    _logger.LogError("Failure saving Notification to Cosmos DB");
+                    _logger.LogError("Failed when saving Notification to Cosmos DB");
 
                     return new JsonResult(new JsonSerializerOptions())
                     {
@@ -139,7 +143,7 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failure saving Notification to Cosmos DB");
+                _logger.LogError(ex, "An error has occurred when saving Notification to Cosmos DB. Exception {ErrorMessage}", ex.Message);
                 
                 return new JsonResult(new JsonSerializerOptions())
                 {

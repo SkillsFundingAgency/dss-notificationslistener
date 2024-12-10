@@ -22,15 +22,24 @@ namespace NCS.DSS.NotificationsListener.Services
 
         public async Task<ItemResponse<Notification>> CreateNewNotificationDocument(Notification newDocument)
         {
-            _logger.LogInformation($"{nameof(CreateNewNotificationDocument)} function has been invoked");
-
-            _logger.LogInformation("Attempting to create new document in Cosmos DB");
-
-            ItemResponse<Notification> createRequestResponse = await _container.CreateItemAsync(newDocument, PartitionKey.None);
-
-            _logger.LogInformation($"{nameof(CreateNewNotificationDocument)} function has finished invocation");
-
-            return createRequestResponse;
+            _logger.LogInformation("Starting {MethodName}", nameof(CreateNewNotificationDocument));
+        
+            try
+            {
+                _logger.LogInformation("Attempting to create new document in Cosmos DB. ID: {DocumentId}", newDocument?.id);
+                var response = await _container.CreateItemAsync(newDocument, PartitionKey.None);
+                _logger.LogInformation("Successfully created a new document in Cosmos DB. ID: {DocumentId}", newDocument?.id);
+                return response;
+            }
+            catch (CosmosException ex)
+            {
+                _logger.LogError(ex, "Failed to create document in Cosmos DB. ID: {DocumentId}. Exception: {ErrorMessage}", newDocument?.id, ex.Message);
+                throw;
+            }
+            finally
+            {
+                _logger.LogInformation("Finished {MethodName}", nameof(CreateNewNotificationDocument));
+            }
         }
     }
 }

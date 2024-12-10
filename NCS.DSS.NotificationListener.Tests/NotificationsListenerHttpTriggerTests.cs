@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NCS.DSS.NotificationsListener.Helpers;
 using NCS.DSS.NotificationsListener.Models;
 using NCS.DSS.NotificationsListener.NotificationsListener.Function;
 using NCS.DSS.NotificationsListener.Services;
@@ -30,15 +31,15 @@ namespace NCS.DSS.NotificationsListener.Tests
             _request = new DefaultHttpContext().Request;
 
             _httpRequestHelperMock = new Mock<IHttpRequestHelper>();
-            _loggerMock = new Mock<ILogger<NotificationsListenerHttpTrigger>>();
-            _dynamicHelperMock = new Mock<IDynamicHelper>();
             _cosmosDBServiceMock = new Mock<ICosmosDBService>();
+            _dynamicHelperMock = new Mock<IDynamicHelper>();
+            _loggerMock = new Mock<ILogger<NotificationsListenerHttpTrigger>>();
 
             _function = new NotificationsListenerHttpTrigger(
                 _httpRequestHelperMock.Object,
-                _loggerMock.Object,
+                _cosmosDBServiceMock.Object,
                 _dynamicHelperMock.Object,
-                _cosmosDBServiceMock.Object
+                _loggerMock.Object
             );
         }
 
