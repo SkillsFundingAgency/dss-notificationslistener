@@ -148,7 +148,7 @@ namespace NCS.DSS.NotificationsListener.NotificationsListener.Function
             }
             finally
             {
-                _logger.LogInformation($"{typeof(NotificationsListenerHttpTrigger)} has finished invocation");
+                _logger.LogInformation("{FunctionName} has finished invocation", typeof(NotificationsListenerHttpTrigger));
             }
         }
     }
