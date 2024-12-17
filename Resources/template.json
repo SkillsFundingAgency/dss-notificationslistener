@@ -20,9 +20,6 @@
     "functionAppNames": {
       "type": "array"
     },
-    "serviceBusConnectionString": {
-      "type": "string"
-    },
     "sharedAppServicePlanName": {
       "type": "string"
     },
@@ -33,6 +30,12 @@
       "type": "string"
     },
     "workspaceName": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountKey": {
       "type": "string"
     },
     "workspaceResourceGroup": {
@@ -76,8 +79,11 @@
                 "cosmosDbKey": {
                   "value": "[parameters('cosmosDbKey')]"
                 },
-                "serviceBusConnectionString": {
-                  "value": "[parameters('serviceBusConnectionString')]"
+                "storageAccountName": {
+                  "value": "[parameters('storageAccountName')]"
+                },
+                "storageAccountKey": {
+                  "value": "[parameters('storageAccountKey')]"
                 },
                 "workspaceId": {
                   "value": "[resourceId(parameters('workspaceResourceGroup'), 'Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
