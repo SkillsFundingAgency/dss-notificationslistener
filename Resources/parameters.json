@@ -28,6 +28,9 @@
         },
         "storageAccountKey": {
             "value": "__storageAccountKey__"
+        }, 
+        "appInsightsInstrumentationKey": {
+            "value": "__appInsightsInstrumentationKey__" 
         }
     }
 }
