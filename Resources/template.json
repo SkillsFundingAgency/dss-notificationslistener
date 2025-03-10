@@ -63,7 +63,7 @@
         "Endpoint": "[parameters('cosmosDbEndpoint')]",
         "Key": "[parameters('cosmosDbKey')]",
         "ListenerCollectionId": "[parameters('cosmosDbCollectionId')]",
-        "ListenerDatabaseId": "[parameters('cosmosDbDatabaseId')]",
+        "ListenerDatabaseId": "[parameters('cosmosDbDatabaseId')]"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
