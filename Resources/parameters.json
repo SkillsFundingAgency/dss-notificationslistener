@@ -22,6 +22,18 @@
         },
         "workspaceResourceGroup": {
             "value": "__sharedLogAnalyticsResourceGroup__"
+        },
+        "storageAccountName": {
+            "value": "__storageAccountName__"
+        },
+        "storageAccountKey": {
+            "value": "__storageAccountKey__"
+        }, 
+        "appInsightsInstrumentationKey": {
+            "value": "__appInsightsInstrumentationKey__" 
+        },
+        "keyVaultName": {
+          "value": "__SharedKeyVaultName__"
         }
     }
 }
