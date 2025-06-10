@@ -1,6 +1,6 @@
 ﻿using System.Dynamic;
 
-namespace NCS.DSS.NotificationsListener.Cosmos.Helper
+namespace NCS.DSS.NotificationsListener.Helpers
 {
     public interface IDynamicHelper
     {
